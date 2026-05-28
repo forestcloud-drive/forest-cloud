@@ -16,14 +16,22 @@ echo -e "${BLUE}🌲 Starting Forest Cloud Installation...${NC}"
 REPO_URL="https://github.com/forestcloud-drive/forest-cloud.git"
 REPO_DIR="forest-cloud"
 
-if [ ! -f "compose.yml" ]; then
-    echo -e "${BLUE}📂 Cloning Forest Cloud repository...${NC}"
-    if [ -d "$REPO_DIR" ]; then
-        echo "Found existing $REPO_DIR directory, moving into it..."
-        cd "$REPO_DIR"
-    else
+if [ -d "$REPO_DIR" ] && [ ! -d ".git" ]; then
+    echo -e "${BLUE}📂 Moving into existing $REPO_DIR directory...${NC}"
+    cd "$REPO_DIR"
+fi
+
+if [ -d ".git" ]; then
+    echo -e "${BLUE}🔄 Checking for updates...${NC}"
+    git pull
+else
+    if [ ! -f "compose.yml" ]; then
+        echo -e "${BLUE}📂 Cloning Forest Cloud repository...${NC}"
         git clone "$REPO_URL" "$REPO_DIR"
         cd "$REPO_DIR"
+    else
+        echo -e "${BLUE}ℹ️ Already in Forest Cloud directory, but Git metadata is missing.${NC}"
+        echo -e "To force an update, please delete this directory and run the script again."
     fi
 fi
 
@@ -33,13 +41,17 @@ if [ -d ".git" ]; then
     git submodule update --init --recursive
     
     # 3. Detach from Git (Remove repository metadata)
-    echo -e "${BLUE}🧹 Removing Git metadata to create a clean installation...${NC}"
-    # Remove all .git directories and files recursively (including submodules)
-    find . -name ".git" -exec rm -rf {} +
-    # Remove .gitmodules and .github directories
-    find . -name ".gitmodules" -delete
-    find . -name ".github" -exec rm -rf {} +
-    echo -e "✅ Git metadata removed."
+    if [[ "$*" == *"--keep-git"* ]]; then
+        echo -e "${BLUE}ℹ️ Keeping Git metadata as requested.${NC}"
+    else
+        echo -e "${BLUE}🧹 Removing Git metadata to create a clean installation...${NC}"
+        # Remove all .git directories and files recursively (including submodules)
+        find . -name ".git" -exec rm -rf {} +
+        # Remove .gitmodules and .github directories
+        find . -name ".gitmodules" -delete
+        find . -name ".github" -exec rm -rf {} +
+        echo -e "✅ Git metadata removed."
+    fi
 else
     echo "⚠️  Not a git repository, skipping submodule update and detachment."
 fi
