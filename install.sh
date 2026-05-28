@@ -63,6 +63,12 @@ if [ ! -f "server/.env" ]; then
     sed -i "s/JWT_SECRET=replace_me_with_a_random_string/JWT_SECRET=${RANDOM_SECRET}/" server/.env
 else
     echo "✅ server/.env already exists."
+    # Ensure HOST is 0.0.0.0 for Docker even if file existed
+    if grep -q "HOST=localhost" server/.env; then
+        echo "Updating HOST to 0.0.0.0 in server/.env for Docker compatibility..."
+        sed -i '' "s/HOST=localhost/HOST=0.0.0.0/" server/.env 2>/dev/null || \
+        sed -i "s/HOST=localhost/HOST=0.0.0.0/" server/.env
+    fi
 fi
 
 if [ ! -f "client/.env" ]; then
