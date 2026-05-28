@@ -4,7 +4,7 @@ Forest Cloud is a lightweight, self-hosted cloud storage solution built with Nes
 
 ## 🚀 Quick Start
 
-The fastest way to get started is to run the installation script directly. This will clone the repository, initialize submodules, set up environment variables, and start the application using Docker Compose.
+The fastest way to get started is to run the installation script directly. This will clone the repository, initialize submodules, clean up Git metadata, set up data directories with correct permissions, and start the application using Docker Compose.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/forestcloud-drive/forest-cloud/refs/heads/main/install.sh | bash

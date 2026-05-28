@@ -44,7 +44,14 @@ else
     echo "⚠️  Not a git repository, skipping submodule update and detachment."
 fi
 
-# 4. Create environment files
+# 4. Create data directories and set permissions
+echo -e "${BLUE}📂 Creating data directories...${NC}"
+mkdir -p data/db data/uploads
+# Ensure directories are writable by the Docker container
+chmod -R 777 data
+echo -e "✅ Data directories prepared."
+
+# 5. Create environment files
 echo -e "${BLUE}🔑 Setting up environment variables...${NC}"
 
 if [ ! -f "server/.env" ]; then
@@ -65,7 +72,7 @@ else
     echo "✅ client/.env already exists."
 fi
 
-# 5. Start Docker Compose
+# 6. Start Docker Compose
 echo -e "${BLUE}🐳 Starting Forest Cloud unified stack...${NC}"
 PROJECT_NAME="forest-cloud"
 if command -v docker-compose &> /dev/null; then
