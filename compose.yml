@@ -1,0 +1,22 @@
+services:
+  server:
+    build:
+      context: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./data/db:/usr/src/app/.db
+      - ./data/uploads:/usr/src/app/uploads
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    env_file:
+      - ./client/.env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "7180:7180"
