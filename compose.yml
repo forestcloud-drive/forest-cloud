@@ -2,6 +2,8 @@ services:
   server:
     build:
       context: ./server
+    ports:
+      - "9180:9180"
     env_file:
       - ./server/.env
     environment:

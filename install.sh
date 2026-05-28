@@ -31,11 +31,20 @@ fi
 echo -e "${BLUE}📦 Initializing git submodules...${NC}"
 if [ -d ".git" ]; then
     git submodule update --init --recursive
+    
+    # 3. Detach from Git (Remove repository metadata)
+    echo -e "${BLUE}🧹 Removing Git metadata to create a clean installation...${NC}"
+    # Remove all .git directories and files recursively (including submodules)
+    find . -name ".git" -exec rm -rf {} +
+    # Remove .gitmodules and .github directories
+    find . -name ".gitmodules" -delete
+    find . -name ".github" -exec rm -rf {} +
+    echo -e "✅ Git metadata removed."
 else
-    echo "⚠️  Not a git repository, skipping submodule update."
+    echo "⚠️  Not a git repository, skipping submodule update and detachment."
 fi
 
-# 2. Create environment files
+# 4. Create environment files
 echo -e "${BLUE}🔑 Setting up environment variables...${NC}"
 
 if [ ! -f "server/.env" ]; then
@@ -56,12 +65,13 @@ else
     echo "✅ client/.env already exists."
 fi
 
-# 3. Start Docker Compose
-echo -e "${BLUE}🐳 Starting Forest Cloud with Docker Compose...${NC}"
+# 5. Start Docker Compose
+echo -e "${BLUE}🐳 Starting Forest Cloud unified stack...${NC}"
+PROJECT_NAME="forest-cloud"
 if command -v docker-compose &> /dev/null; then
-    docker-compose up -d --build
+    docker-compose -p "$PROJECT_NAME" up -d --build
 elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
-    docker compose up -d --build
+    docker compose -p "$PROJECT_NAME" up -d --build
 else
     echo "❌ Error: Docker Compose is not installed."
     exit 1
